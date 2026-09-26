@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>StockSense — Video Recording Script (Odoo x LPU Hackathon)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: #1e293b;
+      background: #f8fafc;
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 40px 50px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+
+    h1 {
+      font-size: 26px;
+      font-weight: 800;
+      color: #4f46e5;
+      margin-bottom: 6px;
+      border-bottom: 2px solid #e0e7ff;
+      padding-bottom: 10px;
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-top: 26px;
+      margin-bottom: 12px;
+      padding-left: 10px;
+      border-left: 4px solid #6366f1;
+    }
+
+    h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #334155;
+      margin-top: 18px;
+      margin-bottom: 8px;
+    }
+
+    h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #475569;
+      margin-top: 14px;
+      margin-bottom: 6px;
+    }
+
+    p {
+      margin-bottom: 10px;
+      color: #334155;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #e2e8f0;
+      margin: 22px 0;
+    }
+
+    blockquote {
+      background: #eef2ff;
+      border-left: 4px solid #6366f1;
+      padding: 12px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 14px 0;
+      color: #312e81;
+      font-size: 13px;
+    }
+
+    .cue-screen {
+      background: #fdf2f8;
+      border-left: 4px solid #ec4899;
+      padding: 8px 14px;
+      border-radius: 0 6px 6px 0;
+      margin: 10px 0;
+      font-weight: 600;
+      color: #9d174d;
+      font-size: 13px;
+    }
+
+    .cue-speaker {
+      background: #f0fdf4;
+      border-left: 4px solid #22c55e;
+      padding: 6px 12px;
+      border-radius: 0 6px 6px 0;
+      margin-top: 12px;
+      margin-bottom: 4px;
+      font-weight: 700;
+      color: #15803d;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 12.5px;
+    }
+
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 8px 12px;
+      text-align: left;
+    }
+
+    th {
+      background: #f1f5f9;
+      color: #0f172a;
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    ul {
+      margin-left: 20px;
+      margin-bottom: 12px;
+    }
+
+    li {
+      margin-bottom: 4px;
+      color: #334155;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
+      background: #f1f5f9;
+      color: #6b21a8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    pre {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 12px 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+
+    pre code {
+      background: transparent;
+      color: #38bdf8;
+      padding: 0;
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+        padding: 0;
+        font-size: 12px;
+      }
+      .container {
+        box-shadow: none;
+        padding: 0;
+        max-width: 100%;
+      }
+      h2 {
+        page-break-before: auto;
+      }
+      .cue-screen, .cue-speaker, blockquote {
+        break-inside: avoid;
+      }
+      table {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <p>﻿# 🎬 StockSense — Complete Demo Video Script</p>
+<h3>Odoo × LPU Hackathon | End-to-End Walkthrough</h3>
+<hr/>
+<blockquote><strong>BEFORE RECORDING CHECKLIST</strong></blockquote>
+<blockquote>- [ ] Open http://localhost:5173/ in browser (full screen or 1080p window)</blockquote>
+<blockquote>- [ ] Open pgAdmin 4 (minimized, ready to alt-tab)</blockquote>
+<blockquote>- [ ] Open VS Code with server/server.ts and src/pages/DashboardPage.tsx side by side (minimized)</blockquote>
+<blockquote>- [ ] Microphone working</blockquote>
+<blockquote>- [ ] Screen at 1920x1080</blockquote>
+<blockquote>- [ ] Close all unnecessary apps/notifications</blockquote>
+<blockquote>- [ ] Clear browser history/incognito so no autofill shows</blockquote>
+<hr/>
+<h2>SECTION 1 — INTRODUCTION (0:00 – 1:30)</h2>
+<div class="cue-screen"><strong>[SHOW: Blank screen or a simple title card — "StockSense | Odoo × LPU Hackathon"]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"Hi everyone. My name is Saikiran Lakotia, and this is StockSense — my submission for the Odoo × LPU Hackathon."</p>
+<p>"Before I show you the application, let me quickly talk about the problem we were asked to solve."</p>
+<hr/>
+<h3>1.1 The Problem Statement</h3>
+<p><strong>[Keep title card on screen or show the PDF briefly]</strong></p>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"The hackathon problem statement was about building an Inventory Management System — something that real businesses, especially warehouses and e-commerce companies, desperately need."</p>
+<p>"The core pain points that were mentioned:"</p>
+<p>"Number one — businesses have NO real-time visibility into how much stock they actually have. They're running on outdated spreadsheets or guesswork."</p>
+<p>"Number two — when goods come in from a vendor or go out to a customer, there is no proper tracking. Items get lost, quantities mismatch, and nobody knows why."</p>
+<p>"Number three — there is ZERO audit trail. If something goes wrong — a missing shipment, wrong quantity dispatched — you can't trace it back."</p>
+<p>"Number four — there are no automated low-stock alerts. Products go out of stock and nobody finds out until a customer complains."</p>
+<p>"Number five — everything is disconnected. The receipts team doesn't know what the dispatch team is doing."</p>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"So the challenge was — build a system that solves ALL of these problems, with a real database, real business logic, and a real working interface."</p>
+<hr/>
+<h3>1.2 What I Built</h3>
+<div class="cue-screen"><strong>[SHOW: Landing page at http://localhost:5173/]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"What I built is StockSense — a full-stack, enterprise-grade inventory management system."</p>
+<p>"It has a React frontend with TypeScript, an Express.js backend API, and a real PostgreSQL database at its core. No mock data. Every number you see is stored in actual database tables."</p>
+<p>"Let me walk you through everything — from landing on the page for the first time, all the way through creating receipts, dispatching deliveries, and checking live stock."</p>
+<hr/>
+<h2>SECTION 2 — LANDING PAGE TOUR (1:30 – 3:00)</h2>
+<div class="cue-screen"><strong>[SHOW: http://localhost:5173/ — full landing page]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"This is the public landing page. The first thing a new user sees."</p>
+<p>"You'll notice the sticky navigation bar at the top — the StockSense logo on the left, navigation links in the middle, and Sign In and Get Started buttons on the right."</p>
+<p>"The hero section immediately communicates the value proposition — 'End Inventory Chaos. Master Every Stock Movement in Real Time.'"</p>
+<p>"Below the headline, there's a description of what the system actually does — inbound receipts, outbound dispatches, warehouse history tracking."</p>
+<p>"And these three trust indicators — PostgreSQL Real Persistence, Zero Mock Data, and Double-Entry Stock Logic — these are not marketing fluff. These are actual technical facts about how this system is built."</p>
+<div class="cue-screen"><strong>[SCROLL DOWN slowly]</strong></div>
+<p>"This browser mockup here is an actual screenshot of the live dashboard. Not a design mockup — a real screenshot taken from the running application."</p>
+<div class="cue-screen"><strong>[CONTINUE SCROLLING]</strong></div>
+<p>"The Features section explains the four core pillars — Real-Time Stock Tracking, Multi-Warehouse Support, Automated Low-Stock Alerts, and Full Audit Trail."</p>
+<p>"The Workflow section shows the exact flow — from vendor receipt all the way to customer delivery."</p>
+<p>"And the Architecture section shows what's happening under the hood — React talking to Express, Express talking to PostgreSQL."</p>
+<hr/>
+<h2>SECTION 3 — AUTHENTICATION (3:00 – 5:30)</h2>
+<div class="cue-screen"><strong>[CLICK: "Get Started" button — goes to /signup]</strong></div>
+<h3>3.1 Sign Up</h3>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"Let's create a new account to show the signup flow."</p>
+<p>"I'll enter a name, a work email, and a password."</p>
+<div class="cue-screen"><strong>[TYPE: Name "Demo User", Email "demo@company.com", Password "demo1234"]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"When I click Continue to Verification, the system does the following behind the scenes:"</p>
+<p>"One — it sends the data to our Express API at the POST /api/signup endpoint."</p>
+<p>"Two — the password is hashed using bcrypt with a salt factor of 10. The raw password is NEVER stored."</p>
+<p>"Three — a 6-digit OTP code is generated and stored in the users table in PostgreSQL."</p>
+<p>"Four — the OTP code is returned to the frontend for demo purposes — in production this would be emailed."</p>
+<div class="cue-screen"><strong>[CLICK: "Continue to Verification"]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"Now we're on the OTP verification step. This is a demo environment so the code is shown right here in this banner."</p>
+<div class="cue-screen"><strong>[ENTER OTP CODE]</strong></div>
+<p>"When I verify, the server checks the OTP against what's stored in the database, and if it matches and hasn't expired, it issues a JWT token — a JSON Web Token — that the frontend stores in localStorage."</p>
+<p>"Every API request from this point sends that token in the Authorization header. The server verifies it on every protected route."</p>
+<div class="cue-screen"><strong>[SHOW: Redirect to dashboard]</strong></div>
+<hr/>
+<h3>3.2 Sign In (existing user)</h3>
+<div class="cue-screen"><strong>[NAVIGATE to /login — click Return to Home, then Sign In]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"For existing users, the login flow is straightforward. Let me use the demo admin account."</p>
+<p><strong>[CLICK "Fill Demo Admin" button]</strong></p>
+<p>"The system auto-fills admin@stocksense.com and admin123 — the seeded administrator account. In a real deployment this would of course be removed."</p>
+<p><strong>[CLICK Sign In]</strong></p>
+<p>"Authenticated. JWT token issued. Let's get into the actual application."</p>
+<hr/>
+<h2>SECTION 4 — DASHBOARD (5:30 – 8:30)</h2>
+<div class="cue-screen"><strong>[SHOW: Dashboard at /app]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"This is the Inventory Command Center — the main dashboard."</p>
+<p>"Let's break it down from top to bottom."</p>
+<h3>4.1 Topbar</h3>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"At the top, we have the application topbar. On the left — a hamburger menu that toggles the sidebar, the StockSense breadcrumb, and the current page name."</p>
+<p>"On the right — the PostgreSQL Live indicator showing our database connection status in real time. Then the Dispatch and Receive Goods quick-action buttons, and a logout icon."</p>
+<h3>4.2 Sidebar</h3>
+<div class="cue-screen"><strong>[POINT TO Sidebar]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"The left sidebar is the main navigation. It's fully collapsible — I can click the Collapse button at the bottom to shrink it to icon-only mode, which saves screen space on smaller monitors."</p>
+<p><strong>[CLICK collapse, pause, then expand again]</strong></p>
+<p>"On mobile, it becomes a slide-in drawer — tap the hamburger icon and the sidebar slides in from the left."</p>
+<p>"The navigation is organized into three sections — Workspace with the Overview dashboard, Operations with Receipts, Deliveries, and Stock Inventory, and Master Data with Products and Move History, plus Configuration for Warehouses and Racks."</p>
+<h3>4.3 KPI Cards</h3>
+<div class="cue-screen"><strong>[POINT TO 4 KPI Cards]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"These four KPI cards are the pulse of your warehouse operation."</p>
+<p>"Receipts to Receive — how many inbound shipments are pending validation."</p>
+<p>"Deliveries to Dispatch — how many outbound orders are ready or waiting."</p>
+<p>"Low Stock Alerts — products that have fallen below their reorder threshold."</p>
+<p>"Total Products — the size of your product catalog."</p>
+<p>"These are NOT hardcoded numbers. They are live COUNT queries against the PostgreSQL database, refreshed every time you load the page."</p>
+<p>"The logic is simple — for Receipts, it counts stock_moves where move_type = 'receipt' and status is 'waiting' or 'ready'. Same pattern for deliveries. Low stock counts products where on_hand minus reserved is less than or equal to the reorder point."</p>
+<h3>4.4 Recent Movements Table</h3>
+<div class="cue-screen"><strong>[POINT TO table]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"The Recent Movements table is a live audit trail — the last 8 stock movements across the warehouse."</p>
+<p>"Each row shows the reference number — like WH/IN/0004 or WH/OUT/0003 — the type badge in color (green for RECEIPT, orange for DELIVERY), the route showing source to destination location, the contact (vendor or customer name), the scheduled date, and the current status."</p>
+<p>"The color-coded status pills — DONE in green, WAITING in orange, READY in purple — make it immediately obvious what needs attention."</p>
+<h3>4.5 Warehouse Pulse Chart</h3>
+<div class="cue-screen"><strong>[POINT TO Bar Chart]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"On the right is the Warehouse Pulse — a bar chart showing stock movement activity by day of the week. It answers the question: when is our warehouse busiest?"</p>
+<p>"This is built using pure CSS and JavaScript — no chart library dependency — making it lightweight and fast."</p>
+<hr/>
+<h2>SECTION 5 — RECEIPTS: GOODS IN (8:30 – 12:00)</h2>
+<div class="cue-screen"><strong>[CLICK: Receipts (In) in sidebar]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"This is the Receipts page — everything that comes INTO the warehouse from vendors."</p>
+<h3>5.1 Receipts List View</h3>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"You can see all existing receipts here. Each one has a reference number, the vendor it came from, the destination location inside the warehouse, the contact, the scheduled date, the status, and the number of line items."</p>
+<p>"Notice the references — WH/IN/0001, WH/IN/0002, and so on. These are auto-generated by the system using a sequences table in PostgreSQL. Each warehouse and move type has its own counter. This is exactly how Odoo generates references in production."</p>
+<p><strong>[SHOW search bar]</strong></p>
+<p>"You can search by reference number or vendor name. The filter dropdown lets you narrow to specific statuses."</p>
+<h3>5.2 Create a New Receipt</h3>
+<div class="cue-screen"><strong>[CLICK: + New Receipt button]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"Let me create a new inbound receipt from scratch."</p>
+<p><strong>[FILL FORM: Select vendor, destination location, scheduled date]</strong></p>
+<p>"I select the vendor — this is the contact the goods are coming from."</p>
+<p>"I select the destination location inside the warehouse — for example Rack A or WH Stock."</p>
+<p>"I set the scheduled date."</p>
+<p><strong>[ADD LINE ITEM: select product, enter quantity]</strong></p>
+<p>"Now I add line items — which products are arriving and how many units."</p>
+<p>"You can add multiple products to a single receipt. In real warehouses, a vendor shipment usually contains dozens of product types."</p>
+<div class="cue-screen"><strong>[CLICK: Save / Create]</strong></div>
+<p>"The receipt is created in WAITING status — this means it's scheduled but not yet validated. Stock has NOT been updated yet."</p>
+<h3>5.3 Validate the Receipt</h3>
+<div class="cue-screen"><strong>[CLICK: Validate button on the receipt]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"Now I click Validate. This is the most important button in the entire system."</p>
+<p>"Here's what happens in the backend when Validate is clicked:"</p>
+<p>"One — the server receives a PATCH request to /api/receipts/:id/validate."</p>
+<p>"Two — the InventoryService checks the move is in a validatable state."</p>
+<p>"Three — for each line item, it runs an UPSERT on the stock_quants table."</p>
+<p>"Four — if this product already exists at this location, it ADDS the quantity to on_hand_qty."</p>
+<p>"Five — if it doesn't exist yet, it creates a new stock_quants record."</p>
+<p>"Six — the move status is set to DONE and validated_at is stamped with the current timestamp."</p>
+<p>"Seven — all of this happens inside a single PostgreSQL transaction. If anything fails, the entire operation is rolled back. No partial updates."</p>
+<p><strong>[SHOW status changed to DONE]</strong></p>
+<p>"The receipt is now DONE. Let's verify the stock actually changed."</p>
+<div class="cue-screen"><strong>[CLICK: Stock Inventory in sidebar]</strong></div>
+<p>"Find the product we just received — and you can see the on_hand_qty has increased by exactly the quantity we entered. This is real database persistence."</p>
+<hr/>
+<h2>SECTION 6 — DELIVERIES: GOODS OUT (12:00 – 15:30)</h2>
+<div class="cue-screen"><strong>[CLICK: Deliveries (Out) in sidebar]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"This is the Deliveries page — goods going OUT of the warehouse to customers."</p>
+<h3>6.1 How Stock Availability Works</h3>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"This is where the system's business logic becomes really important."</p>
+<p>"When you create a delivery, the system immediately checks if you have enough free stock to fulfill it."</p>
+<p>"Free stock is calculated as: on_hand_qty minus reserved_qty. Reserved quantity is stock that's already committed to other pending orders."</p>
+<p>"If free stock is greater than or equal to what the delivery needs — the status is READY. You can validate immediately."</p>
+<p>"If free stock is NOT enough — the status is WAITING. You cannot validate until more stock arrives through a receipt."</p>
+<p>"This prevents a critical real-world problem — dispatching goods you don't actually have."</p>
+<h3>6.2 Create a New Delivery</h3>
+<div class="cue-screen"><strong>[CLICK: + New Delivery]</strong></div>
+<div class="cue-screen"><strong>[FILL: Customer name, source location, product, quantity]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"I'm creating a delivery for a customer. I select the source location — where the goods will be picked from. I add the product and quantity."</p>
+<div class="cue-screen"><strong>[SAVE]</strong></div>
+<p>"Watch the status. If the product has enough free stock, it will show READY. If not, WAITING."</p>
+<h3>6.3 Validate the Delivery</h3>
+<div class="cue-screen"><strong>[CLICK: Validate on a READY delivery]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"For a READY delivery, I click Validate."</p>
+<p>"The backend logic here is different from a receipt. Instead of increasing stock, it DECREASES the on_hand_qty at the source location."</p>
+<p>"Again — this is inside a PostgreSQL transaction. Atomic, consistent, and permanent."</p>
+<div class="cue-screen"><strong>[CHECK stock inventory to confirm decrease]</strong></div>
+<p>"Stock decreased. The movement is permanently recorded in the audit trail."</p>
+<hr/>
+<h2>SECTION 7 — STOCK INVENTORY (15:30 – 18:00)</h2>
+<div class="cue-screen"><strong>[CLICK: Stock Inventory in sidebar]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"The Stock Inventory page gives you a real-time snapshot of every product across every location."</p>
+<h3>7.1 Stock Columns Explained</h3>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"Three key columns:"</p>
+<p>"ON HAND — the total physical quantity at this location."</p>
+<p>"RESERVED — quantity committed to pending outbound deliveries."</p>
+<p>"FREE TO USE — on_hand minus reserved. This is what's actually available to dispatch."</p>
+<p>"This three-column model is the same model used by Odoo and SAP in enterprise deployments."</p>
+<h3>7.2 Low Stock Highlighting</h3>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"Products where free-to-use quantity is at or below the reorder point are highlighted with a warning color. These are the products that need to be replenished immediately."</p>
+<p>"The reorder point is set per product in the Products catalog. It could be 5 units, 50 units, whatever makes sense for that product's demand cycle."</p>
+<h3>7.3 Stock Adjustment</h3>
+<div class="cue-screen"><strong>[CLICK: Adjust Qty on a product]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"Sometimes there's a discrepancy between the system and what's physically on the shelf — items get damaged, miscounted, or misplaced."</p>
+<p>"The Adjust Quantity function lets you enter the actual counted quantity. The system calculates the delta — the difference between what was recorded and what you counted — and updates the stock_quants record."</p>
+<p>"This adjustment is also logged as a stock_move with move_type 'adjustment', so the audit trail captures it permanently."</p>
+<hr/>
+<h2>SECTION 8 — PRODUCTS CATALOG (18:00 – 20:00)</h2>
+<div class="cue-screen"><strong>[CLICK: Products in sidebar]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"The Products page is your master catalog — every item that flows through the warehouse."</p>
+<h3>8.1 Product Details</h3>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"Each product has:"</p>
+<p>"— A SKU (Stock Keeping Unit) — a unique identifier like ELEC-001"</p>
+<p>"— A name and category"</p>
+<p>"— Unit of measure — units, kg, litres, boxes"</p>
+<p>"— Cost per unit — used for inventory valuation"</p>
+<p>"— Reorder point — the threshold that triggers a low-stock alert"</p>
+<div class="cue-screen"><strong>[CLICK: + New Product]</strong></div>
+<p>"Creating a product is straightforward. Fill in the details, set a reorder point based on how fast this product moves, and save."</p>
+<p>"Once created, this product is available to add to receipts and deliveries immediately."</p>
+<hr/>
+<h2>SECTION 9 — MOVE HISTORY (20:00 – 22:00)</h2>
+<div class="cue-screen"><strong>[CLICK: Move History in sidebar]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"This is the full, immutable audit trail. Every single stock movement that has ever happened in the system — from day one."</p>
+<p>"Receipts, deliveries, adjustments, everything. With the reference number, type, route, contact, scheduled date, and final status."</p>
+<p>"This is the accountability layer. If a manager asks 'who received this shipment?' or 'when was this item dispatched?', the answer is here."</p>
+<p>"In traditional businesses, this information is either lost, in someone's email, or in a spreadsheet that nobody can find. With StockSense, it's one click away."</p>
+<p><strong>[SHOW search and filter]</strong></p>
+<p>"You can search by reference number, filter by move type, and sort by date."</p>
+<hr/>
+<h2>SECTION 10 — WAREHOUSES & RACKS (22:00 – 23:30)</h2>
+<div class="cue-screen"><strong>[CLICK: Warehouses & Racks in sidebar]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"The Warehouses page is the configuration layer — where you set up the physical and virtual geography of your operations."</p>
+<p>"Each warehouse has a name and a short code — like WH for the main warehouse."</p>
+<p>"Under each warehouse, you have locations. Some are physical — Rack A, Rack B, Stock Room 1."</p>
+<p>"Some are virtual — Vendor location is a virtual source for receipts, Customer location is a virtual destination for deliveries. This is how the system can use a single stock_moves table for all movement types."</p>
+<p>"This exact model is borrowed from Odoo's own architecture — it's called the double-entry stock model, same as double-entry bookkeeping in accounting. Every movement has a source and a destination. This makes reversals, returns, and auditing trivial."</p>
+<hr/>
+<h2>SECTION 11 — POSTGRESQL DATA (LIVE PROOF) (23:30 – 26:00)</h2>
+<div class="cue-screen"><strong>[ALT-TAB to pgAdmin or open terminal]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"Let me show you the actual database to prove everything you just saw is real persistence — not demo data in memory."</p>
+<div class="cue-screen"><strong>[OPEN pgAdmin → stocksense → Tables → stock_quants → View All Rows]</strong></div>
+<p>"Here is the stock_quants table — this is the live stock ledger. Every row represents a product at a specific location with its on_hand and reserved quantities."</p>
+<p>"Every Validate click you saw updated rows in this table."</p>
+<div class="cue-screen"><strong>[SWITCH to stock_moves table]</strong></div>
+<p>"And here is stock_moves — every receipt and delivery we created. The reference numbers match exactly what we saw in the UI. The status column shows 'done' for everything we validated."</p>
+<p><strong>[OPTIONALLY show in psql]</strong></p>
+<p>"Or in the terminal:"</p>
+<pre><code>psql -U postgres -d stocksense
+SELECT reference, move_type, contact, status FROM stock_moves ORDER BY created_at DESC;</code></pre>
+<p>"Real data. Real PostgreSQL. No mock. No in-memory fake."</p>
+<hr/>
+<h2>SECTION 12 — TECHNICAL ARCHITECTURE (26:00 – 28:30)</h2>
+<div class="cue-screen"><strong>[SHOW: VS Code with server.ts or split screen]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"Let me quickly explain the architecture for anyone interested in the technical side."</p>
+<h3>Frontend</h3>
+<p>"The frontend is built in React 18 with TypeScript. Routing is handled manually using state — no React Router dependency — keeping the bundle small."</p>
+<p>"Framer Motion handles all animations — the sidebar collapse, page transitions, and card entrances. All animations are under 300 milliseconds to feel premium without being flashy."</p>
+<p>"The styling is pure CSS — no Tailwind, no Bootstrap. A custom design system with CSS variables for the dark purple theme, consistent spacing, and component-scoped class names."</p>
+<h3>Backend</h3>
+<p>"The backend is a Node.js Express server written in TypeScript, running on port 3001."</p>
+<p>"Vite proxies all /api/* requests from port 5173 to port 3001, so in development you never deal with CORS issues and in production everything runs from one port."</p>
+<p>"The InventoryService class contains all the business logic — stock validation, status computation, reference number generation."</p>
+<h3>Database Model</h3>
+<p>"The database has 8 tables. The key insight is the stock_moves table — it handles receipts, deliveries, internal transfers, and adjustments with a single move_type enum. This is the same design that Odoo uses."</p>
+<p>"Every move has a source location and destination location. For a receipt from a vendor, source is the virtual Vendor location and destination is Rack A. For a delivery, source is Rack A and destination is the virtual Customer location. This makes the audit trail symmetric and complete."</p>
+<p>"Stock is always stored in stock_quants — the live ledger. The moves table records what happened. The quants table records where things stand right now."</p>
+<h3>Auth</h3>
+<p>"Authentication uses bcryptjs for password hashing and jsonwebtoken for session management. OTP verification adds a second factor for account creation. JWTs are stateless — no session store needed."</p>
+<hr/>
+<h2>SECTION 13 — FUTURE IMPROVEMENTS (28:30 – 30:00)</h2>
+<div class="cue-screen"><strong>[SHOW: Dashboard or landing page — calm visual]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"Given the 8-hour hackathon constraint, there are several areas I would expand in production:"</p>
+<p><strong>1. Email Integration</strong></p>
+<p>"Right now the OTP code is shown on screen for demo purposes. In production, this would be sent via a real email service like SendGrid or AWS SES. Users would never see the OTP on screen."</p>
+<p><strong>2. Role-Based Access Control</strong></p>
+<p>"The database already has a 'role' column — manager vs staff. The next step is enforcing those roles at the API level. A staff member shouldn't be able to validate deliveries or modify warehouse configuration."</p>
+<p><strong>3. Internal Transfers</strong></p>
+<p>"The schema already supports internal transfers — moving stock from Rack A to Rack B within the same warehouse. The move_type enum includes 'internal'. The UI for creating internal transfers was not built in the hackathon window."</p>
+<p><strong>4. Barcode Scanning</strong></p>
+<p>"In a real warehouse, operators scan barcodes. Integrating a barcode scanner API into the receipt and delivery forms would make the system usable without keyboard input on the warehouse floor."</p>
+<p><strong>5. Reporting & Export</strong></p>
+<p>"PDF and CSV export of move history, inventory valuation reports, and stock turnover analysis would be the next logical feature set."</p>
+<p><strong>6. Real-Time Updates</strong></p>
+<p>"Currently the dashboard refreshes on page load. Adding WebSocket support would push live updates to all connected dashboards — so when one operator validates a receipt, all other dashboards update automatically."</p>
+<p><strong>7. Multi-Company Support</strong></p>
+<p>"The schema could be extended with a company_id to support multiple businesses on the same platform — turning StockSense into a SaaS product."</p>
+<hr/>
+<h2>SECTION 14 — CLOSING (30:00 – 31:00)</h2>
+<div class="cue-screen"><strong>[SHOW: Landing page or dashboard]</strong></div>
+<div class="cue-speaker"><strong>SPEAK:</strong></div>
+<p>"To summarize what StockSense delivers:"</p>
+<p>"A full-stack web application with a React frontend and Express backend."</p>
+<p>"Real PostgreSQL database — every number is real, every action is persisted."</p>
+<p>"Complete inventory workflow — from vendor receipt to customer delivery."</p>
+<p>"Double-entry stock logic — same model as enterprise systems like Odoo and SAP."</p>
+<p>"Full audit trail — every movement recorded permanently."</p>
+<p>"Authentication with bcrypt and JWT — production-level security."</p>
+<p>"A clean, premium dark-theme UI with smooth animations."</p>
+<p>"The code is fully open source and available on GitHub at github.com/lakotiasaikiran/Odoo-StockSense."</p>
+<p>"Thank you for watching. If you have any questions about the architecture, the database design, or any specific feature, feel free to reach out."</p>
+<hr/>
+<h2>📋 QUICK REFERENCE — VIDEO TIMESTAMPS</h2>
+<table>
+  <tr><th>Time</th><th>Section</th></tr>
+  <tr><td>0:00 – 1:30</td><td>Introduction + Problem Statement</td></tr>
+  <tr><td>1:30 – 3:00</td><td>Landing Page Tour</td></tr>
+  <tr><td>3:00 – 5:30</td><td>Authentication (Signup + OTP + Login)</td></tr>
+  <tr><td>5:30 – 8:30</td><td>Dashboard (KPIs + Sidebar + Charts)</td></tr>
+  <tr><td>8:30 – 12:00</td><td>Receipts — Goods In (Create + Validate)</td></tr>
+  <tr><td>12:00 – 15:30</td><td>Deliveries — Goods Out (Stock check + Validate)</td></tr>
+  <tr><td>15:30 – 18:00</td><td>Stock Inventory (On-hand / Reserved / Free-to-use + Adjust)</td></tr>
+  <tr><td>18:00 – 20:00</td><td>Products Catalog</td></tr>
+  <tr><td>20:00 – 22:00</td><td>Move History & Audit Trail</td></tr>
+  <tr><td>22:00 – 23:30</td><td>Warehouses & Racks Configuration</td></tr>
+  <tr><td>23:30 – 26:00</td><td>Live PostgreSQL Data Proof (pgAdmin)</td></tr>
+  <tr><td>26:00 – 28:30</td><td>Technical Architecture Explanation</td></tr>
+  <tr><td>28:30 – 30:00</td><td>Future Improvements</td></tr>
+  <tr><td>30:00 – 31:00</td><td>Closing Summary</td></tr>
+</table>
+<hr/>
+<h2>🗣️ SPEAKING TIPS</h2>
+<ul>
+  <li>Speak at a relaxed pace — slower than you think you need to</li>
+  <li>Say what you are clicking BEFORE you click it</li>
+  <li>Pause 1 second after navigating to a new page before speaking</li>
+  <li>For technical sections, point to the screen as you explain</li>
+  <li>Keep energy consistent — same tone from start to finish</li>
+  <li>If you make a mistake — pause, take a breath, start the sentence again (easy to edit)</li>
+</ul>
+<hr/>
+<p><em>StockSense | Odoo × LPU Hackathon 2026 | github.com/lakotiasaikiran/Odoo-StockSense</em></p>
+
+  </div>
+</body>
+</html>
