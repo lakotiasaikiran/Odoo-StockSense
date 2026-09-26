@@ -4,10 +4,16 @@ const BASE_URL = '/api';
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const url = `${BASE_URL}${endpoint}`;
-  const headers = {
+  const token = localStorage.getItem('stocksense_token');
+
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...(options.headers || {}),
+    ...(options.headers as Record<string, string> || {}),
   };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
 
   const response = await fetch(url, { ...options, headers });
   const data = await response.json().catch(() => null);
@@ -21,6 +27,29 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 }
 
 export const api = {
+  // Auth
+  signup: (payload: { name: string; email: string; password: string }) =>
+    request<{ ok: boolean; message: string; email: string; otpCode: string }>('/auth/signup', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  verifyOtp: (payload: { email: string; otp_code: string }) =>
+    request<{ ok: boolean; message: string; token: string; user: any }>('/auth/verify-otp', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  resendOtp: (email: string) =>
+    request<{ ok: boolean; message: string; otpCode: string }>('/auth/resend-otp', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    }),
+  login: (payload: { email: string; password: string }) =>
+    request<{ ok: boolean; message: string; token?: string; user?: any; requireOtp?: boolean; email?: string; otpCode?: string }>('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  getMe: () => request<{ ok: boolean; user: any }>('/auth/me'),
+
   // Health
   getHealth: () => request<{ ok: boolean; database: string; service: string; time: string }>('/health'),
 

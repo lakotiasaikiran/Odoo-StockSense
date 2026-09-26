@@ -1,6 +1,8 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import path from 'path';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import { pool, query, testConnection } from './db';
 import { InventoryService } from './services/inventoryService';
 
@@ -8,9 +10,17 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const ROOT = path.resolve(__dirname, '..');
 const DIST = path.join(ROOT, 'dist');
+const JWT_SECRET = process.env.JWT_SECRET || 'stocksense-enterprise-secret-key-2026';
 
 app.use(cors());
 app.use(express.json());
+
+// Ensure demo admin password hash is bcrypt
+query(`
+  UPDATE users 
+  SET password_hash = '$2b$10$sUWglcn4zlZnuFQXBT3xG.bkG.iK2rI417WEFFocWb.hB2cuY4rkK' 
+  WHERE email = 'admin@stocksense.com' AND (password_hash = 'hash_admin123' OR password_hash NOT LIKE '$2%')
+`).catch(() => {});
 
 // ─────────────────────────────────────────────────────────────
 // 1. Database Connection & Health
@@ -33,6 +43,232 @@ app.get('/api/health', async (_, res: Response) => {
       error: dbHealth.error,
       timestamp: new Date().toISOString()
     });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
+// AUTHENTICATION & OTP VERIFICATION
+// ─────────────────────────────────────────────────────────────
+// Signup: Hashes password, generates 6-digit OTP, stores in DB
+app.post('/api/auth/signup', async (req: Request, res: Response) => {
+  try {
+    const { name, email, password } = req.body;
+
+    if (!name?.trim() || !email?.trim() || !password) {
+      return res.status(400).json({ error: 'Name, email, and password are required.' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters long.' });
+    }
+
+    const emailNorm = email.trim().toLowerCase();
+    const existing = await query('SELECT id FROM users WHERE LOWER(email) = $1', [emailNorm]);
+    if (existing.rowCount && existing.rowCount > 0) {
+      return res.status(400).json({ error: 'An account with this email already exists.' });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    // Generate 6-digit numeric OTP
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const insertRes = await query(`
+      INSERT INTO users (name, email, password_hash, role, otp_code, otp_expires_at)
+      VALUES ($1, $2, $3, 'staff', $4, NOW() + INTERVAL '15 minutes')
+      RETURNING id, name, email, role, otp_code
+    `, [name.trim(), emailNorm, passwordHash, otpCode]);
+
+    const newUser = insertRes.rows[0];
+
+    res.status(201).json({
+      ok: true,
+      message: `Account created! Verification code: ${otpCode}`,
+      email: newUser.email,
+      otpCode: newUser.otp_code // Displayed in UI toast / demo mode for easy verification
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to sign up.' });
+  }
+});
+
+// Verify OTP: Confirms code and returns JWT token + user profile
+app.post('/api/auth/verify-otp', async (req: Request, res: Response) => {
+  try {
+    const { email, otp_code } = req.body;
+
+    if (!email?.trim() || !otp_code?.trim()) {
+      return res.status(400).json({ error: 'Email and 6-digit OTP code are required.' });
+    }
+
+    const emailNorm = email.trim().toLowerCase();
+    const userRes = await query(`
+      SELECT id, name, email, role, otp_code, otp_expires_at
+      FROM users
+      WHERE LOWER(email) = $1
+    `, [emailNorm]);
+
+    if (userRes.rowCount === 0) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    const user = userRes.rows[0];
+
+    if (!user.otp_code || user.otp_code !== otp_code.trim()) {
+      return res.status(400).json({ error: 'Invalid verification code. Please check and try again.' });
+    }
+
+    if (user.otp_expires_at && new Date(user.otp_expires_at) < new Date()) {
+      return res.status(400).json({ error: 'Verification code has expired. Please request a new one.' });
+    }
+
+    // Clear OTP upon successful verification
+    await query(`
+      UPDATE users
+      SET otp_code = NULL, otp_expires_at = NULL
+      WHERE id = $1
+    `, [user.id]);
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, name: user.name, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.json({
+      ok: true,
+      message: 'Email successfully verified! Welcome to StockSense.',
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'OTP verification failed.' });
+  }
+});
+
+// Resend OTP
+app.post('/api/auth/resend-otp', async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    if (!email?.trim()) {
+      return res.status(400).json({ error: 'Email is required.' });
+    }
+
+    const emailNorm = email.trim().toLowerCase();
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const updateRes = await query(`
+      UPDATE users
+      SET otp_code = $1, otp_expires_at = NOW() + INTERVAL '15 minutes'
+      WHERE LOWER(email) = $2
+      RETURNING id, name, email, otp_code
+    `, [otpCode, emailNorm]);
+
+    if (updateRes.rowCount === 0) {
+      return res.status(404).json({ error: 'No account found with this email.' });
+    }
+
+    res.json({
+      ok: true,
+      message: `New verification code generated: ${otpCode}`,
+      otpCode
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to resend OTP.' });
+  }
+});
+
+// Login: Validates password, issues JWT, checks OTP state
+app.post('/api/auth/login', async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email?.trim() || !password) {
+      return res.status(400).json({ error: 'Email and password are required.' });
+    }
+
+    const emailNorm = email.trim().toLowerCase();
+    const userRes = await query(`
+      SELECT id, name, email, password_hash, role, otp_code, otp_expires_at
+      FROM users
+      WHERE LOWER(email) = $1
+    `, [emailNorm]);
+
+    if (userRes.rowCount === 0) {
+      return res.status(401).json({ error: 'Invalid email or password.' });
+    }
+
+    const user = userRes.rows[0];
+
+    // Check bcrypt hash or seeded fallback
+    let isMatch = await bcrypt.compare(password, user.password_hash);
+    if (!isMatch && user.password_hash === 'hash_admin123' && password === 'admin123') {
+      isMatch = true;
+      // Upgrade hash
+      const newHash = await bcrypt.hash('admin123', 10);
+      await query('UPDATE users SET password_hash = $1 WHERE id = $2', [newHash, user.id]);
+    }
+
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Invalid email or password.' });
+    }
+
+    // Check if account has an unverified OTP
+    if (user.otp_code && user.otp_expires_at && new Date(user.otp_expires_at) > new Date()) {
+      return res.json({
+        ok: false,
+        requireOtp: true,
+        email: user.email,
+        message: 'Account requires email OTP verification.',
+        otpCode: user.otp_code
+      });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, name: user.name, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.json({
+      ok: true,
+      message: 'Signed in successfully.',
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Login failed.' });
+  }
+});
+
+// Me: Validates JWT token
+app.get('/api/auth/me', async (req: Request, res: Response) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Missing or invalid authorization token.' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const decoded: any = jwt.verify(token, JWT_SECRET);
+
+    const userRes = await query('SELECT id, name, email, role FROM users WHERE id = $1', [decoded.id]);
+    if (userRes.rowCount === 0) {
+      return res.status(401).json({ error: 'User not found.' });
+    }
+
+    res.json({ ok: true, user: userRes.rows[0] });
+  } catch (err: any) {
+    res.status(401).json({ error: 'Invalid or expired token.' });
   }
 });
 
