@@ -8,7 +8,7 @@
     "dev:api": "tsx server/server.ts",
     "dev:web": "vite",
     "build": "vite build",
-    "start": "NODE_ENV=production tsx server/server.ts",
+    "start": "tsx server/server.ts",
     "db:init": "tsx server/initDb.ts"
   },
   "engines": {

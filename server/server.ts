@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import path from 'path';
+import fs from 'fs';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { pool, query, testConnection } from './db';
@@ -1028,10 +1029,13 @@ app.get('/api/users', async (_, res: Response) => {
   }
 });
 
-// Static files in production
-if (process.env.NODE_ENV === 'production') {
+// Static files in production / when frontend is built
+if (process.env.NODE_ENV === 'production' || fs.existsSync(path.join(DIST, 'index.html'))) {
   app.use(express.static(DIST));
-  app.get('*', (_, res: Response) => {
+  app.get('*', (req: Request, res: Response) => {
+    if (req.path.startsWith('/api')) {
+      return res.status(404).json({ error: `API route ${req.path} not found` });
+    }
     res.sendFile(path.join(DIST, 'index.html'));
   });
 }

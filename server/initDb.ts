@@ -10,44 +10,68 @@ const dbName = process.env.POSTGRES_DB || 'stocksense';
 const user = process.env.POSTGRES_USER || 'postgres';
 const password = process.env.POSTGRES_PASSWORD || '';
 
+const connectionString = process.env.DATABASE_URL;
+const useSsl = Boolean(
+  process.env.POSTGRES_SSL === 'true' ||
+  (connectionString && (connectionString.includes('sslmode=require') || !connectionString.includes('localhost')))
+);
+
 async function initDatabase() {
-  console.log(`Connecting to Postgres at ${host}:${port} as ${user}...`);
+  let appClient: Client;
 
-  // Step 1: Ensure database exists
-  const rootClient = new Client({
-    host,
-    port,
-    user,
-    password,
-    database: 'postgres'
-  });
-
-  await rootClient.connect();
-  const dbCheck = await rootClient.query(
-    `SELECT 1 FROM pg_database WHERE datname = $1`,
-    [dbName]
-  );
-
-  if (dbCheck.rowCount === 0) {
-    console.log(`Database "${dbName}" does not exist. Creating it now...`);
-    await rootClient.query(`CREATE DATABASE "${dbName}"`);
-    console.log(`Database "${dbName}" created successfully.`);
+  if (connectionString) {
+    console.log(`Connecting to Postgres via DATABASE_URL...`);
+    appClient = new Client({
+      connectionString,
+      ssl: useSsl ? { rejectUnauthorized: false } : false
+    });
+    await appClient.connect();
+    console.log(`Connected to cloud database. Creating schema tables...`);
   } else {
-    console.log(`Database "${dbName}" already exists.`);
+    console.log(`Connecting to local Postgres at ${host}:${port} as ${user}...`);
+
+    // Step 1: Ensure database exists
+    const rootClient = new Client({
+      host,
+      port,
+      user,
+      password,
+      database: 'postgres'
+    });
+
+    try {
+      await rootClient.connect();
+      const dbCheck = await rootClient.query(
+        `SELECT 1 FROM pg_database WHERE datname = $1`,
+        [dbName]
+      );
+
+      if (dbCheck.rowCount === 0) {
+        console.log(`Database "${dbName}" does not exist. Creating it now...`);
+        await rootClient.query(`CREATE DATABASE "${dbName}"`);
+        console.log(`Database "${dbName}" created successfully.`);
+      } else {
+        console.log(`Database "${dbName}" already exists.`);
+      }
+    } catch (e: any) {
+      console.warn(`Note: Could not check/create database via rootClient: ${e.message}`);
+    } finally {
+      try { await rootClient.end(); } catch (_) {}
+    }
+
+    // Step 2: Connect to stocksense database and run schema
+    appClient = new Client({
+      host,
+      port,
+      user,
+      password,
+      database: dbName,
+      ssl: useSsl ? { rejectUnauthorized: false } : false
+    });
+
+    await appClient.connect();
+    console.log(`Connected to database "${dbName}". Creating schema tables...`);
   }
-  await rootClient.end();
-
-  // Step 2: Connect to stocksense database and run schema
-  const appClient = new Client({
-    host,
-    port,
-    user,
-    password,
-    database: dbName
-  });
-
-  await appClient.connect();
-  console.log(`Connected to database "${dbName}". Creating schema tables...`);
 
   await appClient.query(`
     -- USERS

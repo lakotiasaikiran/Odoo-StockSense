@@ -5,16 +5,35 @@ import path from 'path';
 // Load .env from root directory
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-export const pool = new Pool({
-  host: process.env.POSTGRES_HOST || 'localhost',
-  port: parseInt(process.env.POSTGRES_PORT || '5432', 10),
-  database: process.env.POSTGRES_DB || 'stocksense',
-  user: process.env.POSTGRES_USER || 'postgres',
-  password: process.env.POSTGRES_PASSWORD || '',
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000,
-});
+const connectionString = process.env.DATABASE_URL;
+
+const isProduction = process.env.NODE_ENV === 'production' || !!connectionString;
+const useSsl = Boolean(
+  process.env.POSTGRES_SSL === 'true' ||
+  (connectionString && (connectionString.includes('sslmode=require') || !connectionString.includes('localhost')))
+);
+
+export const pool = new Pool(
+  connectionString
+    ? {
+        connectionString,
+        ssl: useSsl ? { rejectUnauthorized: false } : false,
+        max: 20,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 10000,
+      }
+    : {
+        host: process.env.POSTGRES_HOST || 'localhost',
+        port: parseInt(process.env.POSTGRES_PORT || '5432', 10),
+        database: process.env.POSTGRES_DB || 'stocksense',
+        user: process.env.POSTGRES_USER || 'postgres',
+        password: process.env.POSTGRES_PASSWORD || '',
+        ssl: useSsl ? { rejectUnauthorized: false } : false,
+        max: 20,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 10000,
+      }
+);
 
 pool.on('error', (err) => {
   console.error('Unexpected error on idle PostgreSQL client', err);
